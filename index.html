@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Hospital Clinical Record Form</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 100vh;
+    }
+
+    /* =========================
+       LEFT PANEL
+    ========================== */
+
+    .controls {
+      background: white;
+      border-right: 1px solid #d1d5db;
+      padding: 18px;
+      overflow-y: auto;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .controls h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section h3 {
+      font-size: 15px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #d1d5db;
+      padding-bottom: 6px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      background: white;
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    button {
+      border: none;
+      background: #111827;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: sticky;
+      bottom: 10px;
+      background: white;
+      padding-top: 10px;
+    }
+
+    /* =========================
+       RIGHT PREVIEW AREA
+    ========================== */
+
+    .preview-wrapper {
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .paper {
+      background: white;
+
+      width: min(100%, 1200px);
+
+      min-height: 297mm;
+
+      padding: 30px 40px;
+
+      box-shadow: 0 0 12px rgba(0,0,0,0.12);
+      border-radius: 10px;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    .hospital-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      gap: 20px;
+    }
+
+    .hospital-header h1 {
+      font-size: 34px;
+      margin-bottom: 5px;
+    }
+
+    .hospital-header p {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .form-no {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    /* =========================
+       GRID
+    ========================== */
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    /* =========================
+       LINE FIELD
+    ========================== */
+
+    .line-field {
+      margin-bottom: 14px;
+    }
+
+    .line-field .label {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .line-field .value {
+      min-height: 28px;
+      border-bottom: 1px solid black;
+      padding: 4px 0;
+      word-break: break-word;
+      font-size: 15px;
+    }
+
+    /* =========================
+       PRINT SECTIONS
+    ========================== */
+
+    .print-section {
+      margin-top: 24px;
+    }
+
+    .print-section h3 {
+      font-size: 16px;
+      border-bottom: 2px solid black;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+
+    .list-box {
+      border: 1px solid #111827;
+      padding: 10px;
+      min-height: 80px;
+    }
+
+    .list-item {
+      padding: 5px 0;
+      border-bottom: 1px dashed #cbd5e1;
+      font-size: 15px;
+    }
+
+    .list-item:last-child {
+      border-bottom: none;
+    }
+
+    /* =========================
+       VITALS
+    ========================== */
+
+    .vitals {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .vital-box {
+      border: 1px solid black;
+      text-align: center;
+      padding: 12px 8px;
+    }
+
+    .vital-box .title {
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .vital-box .number {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media (max-width: 1100px) {
+
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: relative;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #d1d5db;
+      }
+
+      .preview-wrapper {
+        padding: 10px;
+      }
+
+      .paper {
+        width: 100%;
+        padding: 20px;
+      }
+
+      .hospital-header {
+        flex-direction: column;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .vitals {
+        grid-template-columns: 1fr;
+      }
+
+      .vital-box {
+        text-align: left;
+      }
+
+      .action-buttons {
+        position: relative;
+      }
+    }
+
+    /* =========================
+       PRINT
+    ========================== */
+
+    @media print {
+
+      body {
+        background: white;
+      }
+
+      .controls {
+        display: none;
+      }
+
+      .preview-wrapper {
+        padding: 0;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .paper {
+
+        width: 210mm;
+        min-height: 297mm;
+
+        margin: 0;
+        padding: 18mm;
+
+        box-shadow: none;
+        border-radius: 0;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- LEFT PANEL -->
+
+    <div class="controls">
+
+      <h2>Patient Form</h2>
+
+      <!-- BASIC -->
+
+      <div class="section">
+
+        <h3>Basic Information</h3>
+
+        <div class="field">
+          <label>Name</label>
+          <input type="text" id="name">
+        </div>
+
+        <div class="field">
+          <label>Ward / Bed</label>
+          <input type="text" id="ward">
+        </div>
+
+        <div class="field">
+          <label>Registration Number</label>
+          <input type="text" id="regNo">
+        </div>
+
+        <div class="field">
+          <label>Blood Group</label>
+          <input type="text" id="bloodGroup">
+        </div>
+
+        <div class="field">
+          <label>Allergy</label>
+          <input type="text" id="allergy">
+        </div>
+
+        <div class="field">
+          <label>Allergy Reaction</label>
+          <input type="text" id="allergyReaction">
+        </div>
+
+      </div>
+
+      <!-- COMPLAINTS -->
+
+      <div class="section">
+
+        <h3>Chief Complaints</h3>
+
+        <div id="complaintsContainer"></div>
+
+        <button
+          type="button"
+          onclick="addComplaint()"
+        >
+          + Add Complaint
+        </button>
+
+      </div>
+
+      <!-- HISTORY -->
+
+      <div class="section">
+
+        <h3>History of Present Illness</h3>
+
+        <div class="field">
+          <textarea id="history"></textarea>
+        </div>
+
+      </div>
+
+      <!-- MEDICATION -->
+
+      <div class="section">
+
+        <h3>Medications</h3>
+
+        <div id="medicationsContainer"></div>
+
+        <button
+          type="button"
+          onclick="addMedication()"
+        >
+          + Add Medication
+        </button>
+
+      </div>
+
+      <!-- DISEASES -->
+
+      <div class="section">
+
+        <h3>Past Diseases</h3>
+
+        <div id="diseasesContainer"></div>
+
+        <button
+          type="button"
+          onclick="addDisease()"
+        >
+          + Add Disease
+        </button>
+
+      </div>
+
+      <!-- INVESTIGATIONS -->
+
+      <div class="section">
+
+        <h3>Investigations</h3>
+
+        <div id="investigationsContainer"></div>
+
+        <button
+          type="button"
+          onclick="addInvestigation()"
+        >
+          + Add Investigation
+        </button>
+
+      </div>
+
+      <!-- VITALS -->
+
+      <div class="section">
+
+        <h3>Vitals</h3>
+
+        <div class="field">
+          <label>Pulse</label>
+          <input type="text" id="pulse">
+        </div>
+
+        <div class="field">
+          <label>Blood Pressure</label>
+          <input type="text" id="bp">
+        </div>
+
+        <div class="field">
+          <label>Temperature</label>
+          <input type="text" id="temp">
+        </div>
+
+        <div class="field">
+          <label>Respiration</label>
+          <input type="text" id="resp">
+        </div>
+
+        <div class="field">
+          <label>Weight</label>
+          <input type="text" id="weight">
+        </div>
+
+        <div class="field">
+          <label>Height</label>
+          <input type="text" id="height">
+        </div>
+
+      </div>
+
+      <!-- BUTTONS -->
+
+      <div class="action-buttons">
+
+        <button onclick="window.print()">
+          Print Form
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT PREVIEW -->
+
+    <div class="preview-wrapper">
+
+      <div class="paper">
+
+        <!-- HEADER -->
+
+        <div class="hospital-header">
+
+          <div>
+            <h1>Sir Ganga Ram Hospital</h1>
+            <p>Clinical Record File</p>
+          </div>
+
+          <div class="form-no">
+            Form #03
+          </div>
+
+        </div>
+
+        <!-- BASIC -->
+
+        <div class="grid-2">
+
+          <div class="line-field">
+            <div class="label">Name</div>
+            <div class="value" id="preview-name"></div>
+          </div>
+
+          <div class="line-field">
+            <div class="label">Registration No</div>
+            <div class="value" id="preview-regNo"></div>
+          </div>
+
+        </div>
+
+        <div class="grid-3">
+
+          <div class="line-field">
+            <div class="label">Ward / Bed</div>
+            <div class="value" id="preview-ward"></div>
+          </div>
+
+          <div class="line-field">
+            <div class="label">Blood Group</div>
+            <div class="value" id="preview-bloodGroup"></div>
+          </div>
+
+          <div class="line-field">
+            <div class="label">Allergy</div>
+            <div class="value" id="preview-allergy"></div>
+          </div>
+
+        </div>
+
+        <div class="line-field">
+          <div class="label">Allergy Reaction</div>
+
+          <div
+            class="value"
+            id="preview-allergyReaction"
+          ></div>
+        </div>
+
+        <!-- COMPLAINTS -->
+
+        <div class="print-section">
+
+          <h3>Chief Complaints</h3>
+
+          <div
+            class="list-box"
+            id="preview-complaints"
+          ></div>
+
+        </div>
+
+        <!-- HISTORY -->
+
+        <div class="print-section">
+
+          <h3>History of Present Illness</h3>
+
+          <div
+            class="list-box"
+            id="preview-history"
+          ></div>
+
+        </div>
+
+        <!-- MEDICATION -->
+
+        <div class="print-section">
+
+          <h3>Medication Being Taken</h3>
+
+          <div
+            class="list-box"
+            id="preview-medications"
+          ></div>
+
+        </div>
+
+        <!-- DISEASES -->
+
+        <div class="print-section">
+
+          <h3>Past Diseases</h3>
+
+          <div
+            class="list-box"
+            id="preview-diseases"
+          ></div>
+
+        </div>
+
+        <!-- INVESTIGATIONS -->
+
+        <div class="print-section">
+
+          <h3>Previous Investigation Reports</h3>
+
+          <div
+            class="list-box"
+            id="preview-investigations"
+          ></div>
+
+        </div>
+
+        <!-- VITALS -->
+
+        <div class="print-section">
+
+          <h3>Physical Examination</h3>
+
+          <div class="vitals">
+
+            <div class="vital-box">
+              <div class="title">Pulse</div>
+              <div class="number" id="preview-pulse"></div>
+            </div>
+
+            <div class="vital-box">
+              <div class="title">BP</div>
+              <div class="number" id="preview-bp"></div>
+            </div>
+
+            <div class="vital-box">
+              <div class="title">Temp</div>
+              <div class="number" id="preview-temp"></div>
+            </div>
+
+            <div class="vital-box">
+              <div class="title">Resp</div>
+              <div class="number" id="preview-resp"></div>
+            </div>
+
+            <div class="vital-box">
+              <div class="title">Weight</div>
+              <div class="number" id="preview-weight"></div>
+            </div>
+
+            <div class="vital-box">
+              <div class="title">Height</div>
+              <div class="number" id="preview-height"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const state = {
+      complaints: [],
+      medications: [],
+      diseases: [],
+      investigations: []
+    }
+
+    const basicFields = [
+      'name',
+      'ward',
+      'regNo',
+      'bloodGroup',
+      'allergy',
+      'allergyReaction',
+      'history',
+      'pulse',
+      'bp',
+      'temp',
+      'resp',
+      'weight',
+      'height'
+    ]
+
+    basicFields.forEach(field => {
+
+      document
+        .getElementById(field)
+        .addEventListener('input', render)
+
+    })
+
+    function createDynamicInput(
+      containerId,
+      placeholder,
+      arrayName
+    ) {
+
+      const container =
+        document.getElementById(containerId)
+
+      const wrapper =
+        document.createElement('div')
+
+      wrapper.className = 'field'
+
+      const input =
+        document.createElement('input')
+
+      input.type = 'text'
+      input.placeholder = placeholder
+
+      input.addEventListener('input', () => {
+
+        updateArray(arrayName, container)
+
+      })
+
+      wrapper.appendChild(input)
+      container.appendChild(wrapper)
+
+      updateArray(arrayName, container)
+    }
+
+    function updateArray(arrayName, container) {
+
+      state[arrayName] =
+
+        [...container.querySelectorAll('input')]
+
+        .map(input => input.value)
+
+        .filter(value => value.trim() !== '')
+
+      render()
+    }
+
+    function addComplaint() {
+
+      createDynamicInput(
+        'complaintsContainer',
+        'Enter complaint',
+        'complaints'
+      )
+    }
+
+    function addMedication() {
+
+      createDynamicInput(
+        'medicationsContainer',
+        'Enter medication',
+        'medications'
+      )
+    }
+
+    function addDisease() {
+
+      createDynamicInput(
+        'diseasesContainer',
+        'Enter disease',
+        'diseases'
+      )
+    }
+
+    function addInvestigation() {
+
+      createDynamicInput(
+        'investigationsContainer',
+        'Enter investigation',
+        'investigations'
+      )
+    }
+
+    function renderList(targetId, items) {
+
+      const target =
+        document.getElementById(targetId)
+
+      if (items.length === 0) {
+
+        target.innerHTML =
+          '<div class="list-item">-</div>'
+
+        return
+      }
+
+      target.innerHTML =
+
+        items.map(item => `
+          <div class="list-item">
+            ${item}
+          </div>
+        `).join('')
+    }
+
+    function render() {
+
+      basicFields.forEach(field => {
+
+        const input =
+          document.getElementById(field)
+
+        const preview =
+          document.getElementById(
+            `preview-${field}`
+          )
+
+        if (preview) {
+          preview.textContent = input.value
+        }
+
+      })
+
+      renderList(
+        'preview-complaints',
+        state.complaints
+      )
+
+      renderList(
+        'preview-medications',
+        state.medications
+      )
+
+      renderList(
+        'preview-diseases',
+        state.diseases
+      )
+
+      renderList(
+        'preview-investigations',
+        state.investigations
+      )
+
+      document.getElementById(
+        'preview-history'
+      ).textContent =
+
+        document.getElementById(
+          'history'
+        ).value
+    }
+
+    addComplaint()
+    addMedication()
+    addDisease()
+    addInvestigation()
+
+    render()
+
+  </script>
+
+</body>
+</html>
